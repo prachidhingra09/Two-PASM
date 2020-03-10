@@ -10,6 +10,62 @@ Implementation of a two pass assembler using C code to demonstrate how assembly 
 - Generate object code by converting symbolic op-code into respective numeric op-code
 - Generate data for literals and look for values of symbols
 
+## THEORY
+
+### Two-pass-Assembler
+This is my design of a 32-bit ISA and implementation a two pass assembler using C code to demonstrate how assembly language computation occurs with the help of different sets of instructions and different addressing modes defined in ISA. It converted Assembly Language code into Machine Language code and then using the machine language code generated executed the program. The GNUPro process of converting source file to executable file is shown below.
+
+![0](http://i.imgur.com/BzQ3ybQ.gif)
+
+### Assembly Language
+An assembly language is a low-level programming language for a computer, or other programmable device, in which there is a very strong (generally one-to-one) correspondence between the language and the architecture's machine code instructions. Each assembly language is specific to a particular computer architecture, in contrast to most high-level programming languages, which are generally portable across multiple architectures, but require interpreting or compiling.
+Assembly language uses a mnemonic to represent each low-level machine operation or opcode. Some op-codes require one or more operands as part of the instruction.
+
+## Assembler
+Assembly language is converted into executable machine code by a utility program referred to as an assembler; the conversion process is referred to as assembly, or assembling the code.
+
+![1](http://i.imgur.com/HPjwJOQ.jpg)
+
+An assembler is a translator that translates an assembler program into a conventional machine language program. Basically, the assembler goes through the program one line at a time, and generates machine code for that instruction. Then the assembler proceeds to the next instruction. In this way, the entire machine code program is created.
+
+![2](http://i.imgur.com/Mqntp81.jpg)
+
+## Assembler Directives
+- Assembler directives are pseudo instructions
+    - They will not be translated into machine instructions.
+    - They only provide instruction/direction/information to the assembler.
+- Basic assembler directives :
+    -   **START :**  Specify name and starting address for the program
+    -   **END :**    Indicate the end of the source program.
+    -   **EQU :**   The EQU directive is used to replace a number by a symbol. For example:                                         MAXIMUM EQU 99.
+After using this directive, every appearance of the label “MAXIMUM” in the program will be interpreted by the assembler as the number 99 (MAXIMUM = 99). Symbols may be defined this way only once in the program. The EQU directive is mostly used at the beginning of the program.
+
+## Three Main Data Structures
+- Operation Code Table (OPTAB)
+
+- Location Counter (LOCCTR)
+
+- Symbol Table (SYMTAB)
+
+![3](http://i.imgur.com/NEINDaG.jpg)
+(Machine Dependent Assembler)
+
+## Instruction formats
+
+- Addressing modes
+·        Direct addressing (address of operand is given in instruction itself)
+·        Register addressing (one of the operand is general purpose register)
+·        Register indirect addressing (address of operand is specified by register pair)
+·        Immediate addressing (operand  - data is specified in the instruction itself)
+·       Implicit addressing (mostly the operation operates on the contents of accumulator)
+
+- Program relocation
+·        It is desirable to load and run several programs and resources at the same time
+·        The system must be able to load programs into memory wherever there is room
+·        The exact starting address of the program is not known until load time.
+·        The assembler can identify (for the loader) those parts of the program that need modification.
+·        An object program that contains this type of modification information necessary to perform modification is called a re-locatable program.
+
 
 # Two-pass assemblers
 The two pass assembler performs two passes over the source program. 
