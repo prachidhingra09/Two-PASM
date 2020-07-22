@@ -10,7 +10,7 @@
 void strreverse(char* begin, char* end) {
 	char aux;
 	while(end>begin)
-		aux = *end, *end--= *begin, *begin++ = aux;
+		aux=*end, *end--=*begin, *begin++=aux;
 }
 void itoa(int value, char* str, int base) {
 	static char num[] = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -28,29 +28,24 @@ void itoa(int value, char* str, int base) {
 	do {
 		res = div(value,base);
 		*wstr++ = num[res.rem];
-	}while(value = res.quot);
-	if(sign<0) *(wstr++)='-';
+	}while(value=res.quot);
+	if(sign<0) *wstr++='-';
 	*wstr='\0';
 
 	// Reverse string
 	strreverse(str,wstr-1);
 }
 
-void main()
-
-{
+void main() {
 	char a[10],ad[10],label[10],opcode[10],operand[10],mnemonic[10],symbol[10];
-	int i, address, sa, code, add, len, actual_len, bcount=10;
-	FILE *asmFile, *symTab, *interFile, *opTab, *output;
-	
-	asmFile = fopen("./files/asmlist.txt","w");
-	symTab = fopen("./files/symtab.txt","r");
-	interFile = fopen("./filesintermediate.txt","r");
-	opTab = fopen("./files/opTab.txt","r");
-	output = fopen("./filesout.txt","w");
-
+	int i,address,sa,code,add,len,actual_len,tcount=10;
+	FILE *asmFile,*symTab,*interFile,*opTab,*output;
+	asmFile=fopen("./files/asmlist.dat","w");
+	symTab=fopen("./files/symTab.txt","r");
+	interFile=fopen("./files/intermediate.txt","r");
+	opTab=fopen("./files/opTab.txt","r");
+	output=fopen("./files/out.dat","w");
 	fscanf(interFile,"%s%s%s",label,opcode,operand);
-
 	if(strcmp(opcode,"START")==0)
 	{
 		fprintf(asmFile,"\t%s\t%s\t%s\n",label,opcode,operand);
@@ -67,7 +62,7 @@ void main()
 		actual_len=len-3;
 		for(i=2;i<(actual_len+2);i++)
 		{
-			strcpy(ad, itoa(operand[i],ad,16));
+			itoa(operand[i],ad,16);
 			fprintf(asmFile,"%s",ad);
 		}
 		fprintf(asmFile,"\n");
@@ -75,7 +70,7 @@ void main()
 		else if(strcmp(opcode,"WORD")==0)
 		{
 		len=strlen(operand);
-		strcpy(a, itoa(atoi(operand),a,10));
+		itoa(atoi(operand),a,10);
 		fprintf(asmFile,"%d\t%s\t%s\t%s\t00000%s\n",address,label,opcode,operand,a);
 		}
 		else if((strcmp(opcode,"RESB")==0)||(strcmp(opcode,"RESW")==0))
@@ -92,12 +87,12 @@ void main()
 		if(strcmp(operand,"~")==0)
 		{
 			fprintf(asmFile,"%d\t%s\t%s\t%s\t%d0000\n",address,label,opcode,operand,code);
-					if (bcount==10){
+					if (tcount==10){
 							fprintf(output, "\nT%d%d%d0000",address,00,code );
-							bcount=0;
+							tcount=0;
 					}else{
 							fprintf(output, "%d0000",code );
-							bcount++;
+							tcount++;
 					}
 
 		}
@@ -111,17 +106,18 @@ void main()
 			}
 			fprintf(asmFile,"%d\t%s\t%s\t%s\t%d%d\n",address,label,opcode,operand,code,add);
 			//fprintf(output, "T%d%d%d%d\n",address,00,code,add );
-					if (bcount==10){
+					if (tcount==10){
 							fprintf(output, "\nT%d%d%d%d",address,00,code,add );
-							bcount=0;
+							tcount=0;
 					}else{
 							fprintf(output, "%d%d",code,add );
-							bcount++;
+							tcount++;
 					}
 		}
 		}
 		fscanf(interFile,"%d%s%s%s",&address,label,opcode,operand);
 	}
+	
 	fprintf(asmFile,"%d\t%s\t%s\t%s\n",address,label,opcode,operand);
 	fprintf(output, "\nE%6d\n",sa );
 	printf("Finished");
@@ -130,7 +126,7 @@ void main()
 	fclose(symTab);
 	fclose(interFile);
 	fclose(opTab);
-    fclose(output);
-    
+	fclose(output);
+	
 	getchar();
 }

@@ -1,82 +1,79 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
 
 /*
     authors:    iimashfaaq
                 prachidhingra09
 */
 
-int main() {
-    FILE *inp, *symTab, *opTab, *interFile;
-    int locationCounter, startAddr, opAddr, o, len;
-    char mnemonic[20], label[20], operation[20], code[20];
-    //clrscr();
-    
-    inp = fopen("./files/input.txt","r");
-    symTab = fopen("./files/symtab.txt","w");
-    interFile = fopen("./files/intermediate.txt", "w");
+int main()
+{
+    char opcode[10],mnemonic[3],operand[10],label[10],code[10];
+    int locctr,start,length;
+    FILE *inpFile,*symTab,*interFile,*opTab;
+    inpFile=fopen("./files/input.txt","r");
+    symTab=fopen("./files/symTab.txt","w");
+    interFile=fopen("./files/intermediate.txt","w");
+    opTab=fopen("./files/opTab.txt","r");
 
-    fscanf(inp,"%s %s %d",label,mnemonic,&opAddr);
-    
-    if(strcmp(mnemonic,"START") == 0)
+    // scan the first line (should be start)
+    fscanf(inpFile,"%s%s%s",label,opcode,operand);
+    if(strcmp(opcode,"START")==0)
     {
-        startAddr = opAddr;
-        locationCounter = startAddr;
-        fprintf(interFile,"%s\t%s\t%d\n",label,mnemonic,opAddr);
-        fscanf(inp,"%s %s %s",label,mnemonic, operation);
+        start=atoi(operand);  // Get starting address
+        locctr=start; // set locctr as the starting address
+
+        //print to output and scan next line from input
+        fprintf(interFile,"%s\t%s\t%s\n",label,opcode,operand);
+        fscanf(inpFile,"%s%s%s",label,opcode,operand);
     }
     else
-        locationCounter = 0;
-    
-    while(strcmp(mnemonic,"END")!=0)
-    {
-        // fscanf(inp,"%s",operation);
-        printf("\n%d\t%s\t%s\t%s\n",locationCounter,label,mnemonic,operation);
-        
-        if(strcmp(label,"~") != 0)
-        {
-            fprintf(symTab,"\n%s\t%d\n",label, locationCounter);
-        }
-        
-        opTab = fopen("./files/opTab.txt","r");
-        fscanf(opTab,"%s %d",code,&o);
-        
-        while(strcmp(code,"END")!=0)
-        {
-            if(strcmp(mnemonic,code) == 0)
-            {
-                locationCounter += 3;
-                break;
-            }
-            fscanf(opTab,"%s %d",code,&o);
-        }
-        
-        if(strcmp(mnemonic,"WORD") == 0) {
-            locationCounter += 3;
-        }
-        else if(strcmp(mnemonic,"RESW") == 0) {
-            opAddr = atoi(operation);
-            locationCounter += (3 * opAddr);
-        }
-        else if(strcmp(mnemonic,"BYTE") == 0) {
-            ++locationCounter;
-        }
-        else if(strcmp(mnemonic,"RESB") == 0) {
-            opAddr = atoi(operation);
-            locationCounter += opAddr;
-        }
-        fprintf(interFile,"%s\t%s\t%s\n",label,mnemonic,operation);
-        fscanf(inp,"%s%s%s",label, mnemonic, operation);
-    }
-    
-    fprintf(interFile,"%d\t%s\t%s\t%s\n",locationCounter,label,mnemonic,operation);
-    printf("Program length = %d\n\n",locationCounter - startAddr);
+        // No start opcode, take locctr as 0
+        locctr=0;
 
-    fclose(opTab);
-    fclose(inp);
+
+    while(strcmp(opcode,"END")!=0)
+    {
+        fprintf(interFile,"%d\t",locctr);
+        if(strcmp(label,"~")!=0)
+        fprintf(symTab,"%s\t%d\n",label,locctr);
+
+        rewind(opTab);  // goto beginning of file
+        fscanf(opTab,"%s",code);  // scan first code
+        while(strcmp(code,"END")!=0)  // check for end opcode
+        {
+        if(strcmp(opcode,code)==0)  // compare all opcodes
+        {
+            locctr+=3;  // 3 bytes
+            break;
+        }
+        fscanf(opTab,"%s",code);
+        }
+        if(strcmp(opcode,"WORD")==0)
+        locctr+=3;  // 1 word = 3 byte
+        else if(strcmp(opcode,"RESW")==0)
+        locctr+=(3*(atoi(operand)));  // n words
+        else if(strcmp(opcode,"RESB")==0)
+        locctr+=(atoi(operand));  // n bytes
+        else if(strcmp(opcode,"BYTE")==0)
+        ++locctr; // 1 byte
+
+        //print to output and scan next line from input
+        fprintf(interFile,"%s\t%s\t%s\n",label,opcode,operand);
+        fscanf(inpFile,"%s%s%s",label,opcode,operand);
+    }
+
+    // END opcode
+    fprintf(interFile,"%d\t%s\t%s\t%s\n",locctr,label,opcode,operand);
+    length=locctr-start;
+    printf("The length of the program is %d",length);
+
+    fclose(inpFile);
     fclose(symTab);
     fclose(interFile);
-    //getch();
+    fclose(opTab);
+
+    getchar();
     return 0;
 }
