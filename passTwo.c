@@ -43,11 +43,11 @@ void main()
 	int i, address, sa, code, add, len, actual_len, bcount=10;
 	FILE *asmFile, *symTab, *interFile, *opTab, *output;
 	
-	asmFile = fopen("asmlist.txt","w");
-	symTab = fopen("symtab.txt","r");
-	interFile = fopen("intermediate.txt","r");
-	opTab = fopen("opTab.txt","r");
-	output = fopen("out.txt","w");
+	asmFile = fopen("./files/asmlist.txt","w");
+	symTab = fopen("./files/symtab.txt","r");
+	interFile = fopen("./filesintermediate.txt","r");
+	opTab = fopen("./files/opTab.txt","r");
+	output = fopen("./filesout.txt","w");
 
 	fscanf(interFile,"%s%s%s",label,opcode,operand);
 
