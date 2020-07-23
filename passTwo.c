@@ -39,94 +39,91 @@ void itoa(int value, char* str, int base) {
 void main() {
 	char a[10],ad[10],label[10],opcode[10],operand[10],mnemonic[10],symbol[10];
 	int i,address,sa,code,add,len,actual_len,tcount=10;
-	FILE *asmFile,*symTab,*interFile,*opTab,*output;
-	asmFile=fopen("./files/asmlist.dat","w");
-	symTab=fopen("./files/symTab.txt","r");
-	interFile=fopen("./files/intermediate.txt","r");
-	opTab=fopen("./files/opTab.txt","r");
-	output=fopen("./files/out.dat","w");
-	fscanf(interFile,"%s%s%s",label,opcode,operand);
+	FILE *fp1,*fp2,*fp3,*fp4,*fp5;
+	fp1=fopen("asmlist.dat","w");
+	fp2=fopen("symtab.dat","r");
+	fp3=fopen("intermediate.dat","r");
+	fp4=fopen("./files/opTab.dat","r");
+	fp5=fopen("out.dat","w");
+	fscanf(fp3,"%s%s%s",label,opcode,operand);
 	if(strcmp(opcode,"START")==0)
 	{
-		fprintf(asmFile,"\t%s\t%s\t%s\n",label,opcode,operand);
-		fprintf(output, "H%6s%6s26",label,operand );
-		fscanf(interFile,"%d%s%s%s",&address,label,opcode,operand);
+		fprintf(fp1,"\t%s\t%s\t%s\n",label,opcode,operand);
+		fprintf(fp5, "H%6s%6s26",label,operand );
+		fscanf(fp3,"%d%s%s%s",&address,label,opcode,operand);
 		sa=address;
 	}
 	while(strcmp(opcode,"END")!=0)
 	{
 		if(strcmp(opcode,"BYTE")==0)
 		{
-		fprintf(asmFile,"%d\t%s\t%s\t%s\t",address,label,opcode,operand);
+		fprintf(fp1,"%d\t%s\t%s\t%s\t",address,label,opcode,operand);
 		len=strlen(operand);
 		actual_len=len-3;
 		for(i=2;i<(actual_len+2);i++)
 		{
 			itoa(operand[i],ad,16);
-			fprintf(asmFile,"%s",ad);
+			fprintf(fp1,"%s",ad);
 		}
-		fprintf(asmFile,"\n");
+		fprintf(fp1,"\n");
 		}
 		else if(strcmp(opcode,"WORD")==0)
 		{
 		len=strlen(operand);
 		itoa(atoi(operand),a,10);
-		fprintf(asmFile,"%d\t%s\t%s\t%s\t00000%s\n",address,label,opcode,operand,a);
+		fprintf(fp1,"%d\t%s\t%s\t%s\t00000%s\n",address,label,opcode,operand,a);
 		}
 		else if((strcmp(opcode,"RESB")==0)||(strcmp(opcode,"RESW")==0))
 		{
-		fprintf(asmFile,"%d\t%s\t%s\t%s\n",address,label,opcode,operand);
+		fprintf(fp1,"%d\t%s\t%s\t%s\n",address,label,opcode,operand);
 
 		}
 		else
 		{
-		rewind(opTab);
-		fscanf(opTab,"%s%d",mnemonic,&code);
+		rewind(fp4);
+		fscanf(fp4,"%s%d",mnemonic,&code);
 		while(strcmp(opcode,mnemonic)!=0)
-		fscanf(opTab,"%s%d",mnemonic,&code);
+		fscanf(fp4,"%s%d",mnemonic,&code);
 		if(strcmp(operand,"~")==0)
 		{
-			fprintf(asmFile,"%d\t%s\t%s\t%s\t%d0000\n",address,label,opcode,operand,code);
+			fprintf(fp1,"%d\t%s\t%s\t%s\t%d0000\n",address,label,opcode,operand,code);
 					if (tcount==10){
-							fprintf(output, "\nT%d%d%d0000",address,00,code );
+							fprintf(fp5, "\nT%d%d%d0000",address,00,code );
 							tcount=0;
 					}else{
-							fprintf(output, "%d0000",code );
+							fprintf(fp5, "%d0000",code );
 							tcount++;
 					}
 
 		}
 		else
 		{
-			rewind(symTab);
-			fscanf(symTab,"%s%d",symbol,&add);
+			rewind(fp2);
+			fscanf(fp2,"%s%d",symbol,&add);
 			while(strcmp(operand,symbol)!=0)
 			{
-			fscanf(symTab,"%s%d",symbol,&add);
+			fscanf(fp2,"%s%d",symbol,&add);
 			}
-			fprintf(asmFile,"%d\t%s\t%s\t%s\t%d%d\n",address,label,opcode,operand,code,add);
-			//fprintf(output, "T%d%d%d%d\n",address,00,code,add );
+			fprintf(fp1,"%d\t%s\t%s\t%s\t%d%d\n",address,label,opcode,operand,code,add);
+			//fprintf(fp5, "T%d%d%d%d\n",address,00,code,add );
 					if (tcount==10){
-							fprintf(output, "\nT%d%d%d%d",address,00,code,add );
+							fprintf(fp5, "\nT%d%d%d%d",address,00,code,add );
 							tcount=0;
 					}else{
-							fprintf(output, "%d%d",code,add );
+							fprintf(fp5, "%d%d",code,add );
 							tcount++;
 					}
 		}
 		}
-		fscanf(interFile,"%d%s%s%s",&address,label,opcode,operand);
+		fscanf(fp3,"%d%s%s%s",&address,label,opcode,operand);
 	}
-	
-	fprintf(asmFile,"%d\t%s\t%s\t%s\n",address,label,opcode,operand);
-	fprintf(output, "\nE%6d\n",sa );
+	fprintf(fp1,"%d\t%s\t%s\t%s\n",address,label,opcode,operand);
+	fprintf(fp5, "\nE%6d\n",sa );
 	printf("Finished");
-	
-	fclose(asmFile);
-	fclose(symTab);
-	fclose(interFile);
-	fclose(opTab);
-	fclose(output);
-	
+	fclose(fp1);
+	fclose(fp2);
+	fclose(fp3);
+	fclose(fp4);
+	fclose(fp5);
 	getchar();
 }

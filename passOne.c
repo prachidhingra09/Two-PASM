@@ -7,26 +7,25 @@
                 prachidhingra09
 */
 
-int main()
-{
+int main() {
     char opcode[10],mnemonic[3],operand[10],label[10],code[10];
     int locctr,start,length;
-    FILE *inpFile,*symTab,*interFile,*opTab;
-    inpFile=fopen("./files/input.txt","r");
-    symTab=fopen("./files/symTab.txt","w");
-    interFile=fopen("./files/intermediate.txt","w");
-    opTab=fopen("./files/opTab.txt","r");
+    FILE *fp1,*fp2,*fp3,*fp4;
+    fp1=fopen("./files/input.txt","r");
+    fp2=fopen("symtab.dat","w");
+    fp3=fopen("intermediate.dat","w");
+    fp4=fopen("./files/opTab.txt","r");
 
     // scan the first line (should be start)
-    fscanf(inpFile,"%s%s%s",label,opcode,operand);
+    fscanf(fp1,"%s%s%s",label,opcode,operand);
     if(strcmp(opcode,"START")==0)
     {
         start=atoi(operand);  // Get starting address
         locctr=start; // set locctr as the starting address
 
         //print to output and scan next line from input
-        fprintf(interFile,"%s\t%s\t%s\n",label,opcode,operand);
-        fscanf(inpFile,"%s%s%s",label,opcode,operand);
+        fprintf(fp3,"%s\t%s\t%s\n",label,opcode,operand);
+        fscanf(fp1,"%s%s%s",label,opcode,operand);
     }
     else
         // No start opcode, take locctr as 0
@@ -35,12 +34,12 @@ int main()
 
     while(strcmp(opcode,"END")!=0)
     {
-        fprintf(interFile,"%d\t",locctr);
+        fprintf(fp3,"%d\t",locctr);
         if(strcmp(label,"~")!=0)
-        fprintf(symTab,"%s\t%d\n",label,locctr);
+        fprintf(fp2,"%s\t%d\n",label,locctr);
 
-        rewind(opTab);  // goto beginning of file
-        fscanf(opTab,"%s",code);  // scan first code
+        rewind(fp4);  // goto beginning of file
+        fscanf(fp4,"%s",code);  // scan first code
         while(strcmp(code,"END")!=0)  // check for end opcode
         {
         if(strcmp(opcode,code)==0)  // compare all opcodes
@@ -48,7 +47,7 @@ int main()
             locctr+=3;  // 3 bytes
             break;
         }
-        fscanf(opTab,"%s",code);
+        fscanf(fp4,"%s",code);
         }
         if(strcmp(opcode,"WORD")==0)
         locctr+=3;  // 1 word = 3 byte
@@ -60,19 +59,19 @@ int main()
         ++locctr; // 1 byte
 
         //print to output and scan next line from input
-        fprintf(interFile,"%s\t%s\t%s\n",label,opcode,operand);
-        fscanf(inpFile,"%s%s%s",label,opcode,operand);
+        fprintf(fp3,"%s\t%s\t%s\n",label,opcode,operand);
+        fscanf(fp1,"%s%s%s",label,opcode,operand);
     }
 
     // END opcode
-    fprintf(interFile,"%d\t%s\t%s\t%s\n",locctr,label,opcode,operand);
+    fprintf(fp3,"%d\t%s\t%s\t%s\n",locctr,label,opcode,operand);
     length=locctr-start;
     printf("The length of the program is %d",length);
 
-    fclose(inpFile);
-    fclose(symTab);
-    fclose(interFile);
-    fclose(opTab);
+    fclose(fp1);
+    fclose(fp2);
+    fclose(fp3);
+    fclose(fp4);
 
     getchar();
     return 0;
