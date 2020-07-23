@@ -43,7 +43,7 @@ void main() {
 	fp1=fopen("asmlist.dat","w");
 	fp2=fopen("symtab.dat","r");
 	fp3=fopen("intermediate.dat","r");
-	fp4=fopen("./files/opTab.dat","r");
+	fp4=fopen("opTab.dat","r");
 	fp5=fopen("out.dat","w");
 	fscanf(fp3,"%s%s%s",label,opcode,operand);
 	if(strcmp(opcode,"START")==0)

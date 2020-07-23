@@ -11,10 +11,10 @@ int main() {
     char opcode[10],mnemonic[3],operand[10],label[10],code[10];
     int locctr,start,length;
     FILE *fp1,*fp2,*fp3,*fp4;
-    fp1=fopen("./files/input.txt","r");
+    fp1=fopen("input.dat","r");
     fp2=fopen("symtab.dat","w");
     fp3=fopen("intermediate.dat","w");
-    fp4=fopen("./files/opTab.txt","r");
+    fp4=fopen("opTab.dat","r");
 
     // scan the first line (should be start)
     fscanf(fp1,"%s%s%s",label,opcode,operand);
